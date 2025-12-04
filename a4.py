@@ -1,7 +1,7 @@
 import copy
 
-f = open("input/i4.txt","r")
 mymap = []
+f = open("input/i4.txt","r")
 for line in f.readlines():
     mymap.append([x for x in line.strip()])
 
