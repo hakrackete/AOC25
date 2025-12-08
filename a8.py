@@ -34,6 +34,28 @@ for b1,b2,_ in sortiert2:
     if not(added):
         cliques.append(set({b1,b2}))
 
+def merge_clic(clic):
+    new_clic = []
+    for i,c1 in enumerate(clic):
+        added = False
+        for j, c2 in enumerate(clic,i):
+            if not(c1.isdisjoint(c2)) and not(c1 <= c2):
+                new_clic.append(c1.union(c2))
+                added = True
+                break
+        if not(added):
+            new_clic.append(c1)
+    return new_clic
+
+for i in range(3):
+    print(len(cliques))
+    cliques = merge_clic(cliques)
+
+# print(cliques)
+
+            
+
+
 
 sorted_c = sorted(cliques,key = lambda x : len(x))
 print(len(sorted_c[-1]) * len(sorted_c[-2])* len(sorted_c[-3]))
