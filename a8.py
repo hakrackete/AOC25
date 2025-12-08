@@ -18,46 +18,97 @@ for i in range(0,len(boxes)-1):
         distances[(i,j)] = box_dist(boxes[i],boxes[j])
         distances_list.append((i,j,box_dist(boxes[i],boxes[j])))
 
-sortiert = sorted(distances_list, key=lambda x: x[2])[0:1000]
-sortiert2 = sorted(sortiert,key=lambda x: x[0])
+sortiert = sorted(distances_list, key=lambda x: x[2])
+sortiert2 = sorted(sortiert[0:1000],key=lambda x: x[0])
 print(len(sortiert))
 
 cliques = []
 for b1,b2,_ in sortiert2:
-    added = False
-    for c in cliques:
-        if (b1 in c) or (b2 in c) :
-            c.add(b1)
-            c.add(b2)
-            added = True
-            break
-    if not(added):
-        cliques.append(set({b1,b2}))
+    cliques.append(set({b1,b2}))
 
-def merge_clic(clic):
+
+def merge_clic2(clic):
     new_clic = []
     for i,c1 in enumerate(clic):
-        added = False
         for j, c2 in enumerate(clic,i):
-            if not(c1.isdisjoint(c2)) and not(c1 <= c2):
-                new_clic.append(c1.union(c2))
-                added = True
-                break
-        if not(added):
+            if not(c1.isdisjoint(c2)):
+                c1.update(c2)
+        if c1 not in new_clic:
             new_clic.append(c1)
     return new_clic
 
+def solve1(cliques):
+    prev_len = 0
+    current_len = len(cliques)
+    while prev_len != current_len:
+        prev_len = current_len
+        cliques = merge_clic2(cliques)
+        current_len = len(cliques)
+        print(current_len)
+
+    # print(cliques)
+
+    sorted_c = sorted(cliques,key = lambda x : len(x))
+    # print(sorted_c)
+    solution = len(sorted_c[-1]) * len(sorted_c[-2])* len(sorted_c[-3])
+    print(f"solution part 1: {solution}")
 
 
-for i in range(3):
-    print(len(cliques))
-    cliques = merge_clic(cliques)
+solve1(cliques)
+# print(circuits)
 
-# print(cliques)
+def solve2(circuits,sortiert):
+    for a,b, _ in sortiert:
+        # print(f"a: {a} b: {b}")
+        # print(len(circuits))
+        ca, cb = None,None
+        for i, c in enumerate(circuits):
+            # print(f"c: {c}")
+            if a in c:
+                ca = c
+                break
+        for c in circuits:
+            # print(f"c: {c}")
+            if b in c:
+                cb = c
+                break
+        if cb == ca:
+            continue
+        ca.update(cb)
+        circuits[i] = ca
+        circuits.remove(cb)
+        if len(circuits) == 1:
+            solution = boxes[a][0] * boxes[b][0]
+            print(f"solution part 2: {solution} ")
+            break
 
-            
+def solve1_alternative(circuits,sortiert):
+    for a,b, _ in sortiert[0:1000]:
+        # print(f"a: {a} b: {b}")
+        # print(len(circuits))
+        ca, cb = None,None
+        for i, c in enumerate(circuits):
+            # print(f"c: {c}")
+            if a in c:
+                ca = c
+                break
+        for c in circuits:
+            # print(f"c: {c}")
+            if b in c:
+                cb = c
+                break
+        if cb == ca:
+            continue
+        ca.update(cb)
+        circuits[i] = ca
+        circuits.remove(cb)
+    sorted_c = sorted(circuits,key = lambda x : len(x))
+    # print(sorted_c)
+    solution = len(sorted_c[-1]) * len(sorted_c[-2])* len(sorted_c[-3])
+    print(f"solution part 1 alternative: {solution}")
 
+circuits = [set({x}) for x in range(0,1000)]
+solve2(circuits,sortiert)
 
-
-sorted_c = sorted(cliques,key = lambda x : len(x))
-print(len(sorted_c[-1]) * len(sorted_c[-2])* len(sorted_c[-3]))
+circuits = [set({x}) for x in range(0,1000)]
+solve1_alternative(circuits,sortiert)
