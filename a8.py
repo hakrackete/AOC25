@@ -47,6 +47,8 @@ def merge_clic(clic):
             new_clic.append(c1)
     return new_clic
 
+
+
 for i in range(3):
     print(len(cliques))
     cliques = merge_clic(cliques)
