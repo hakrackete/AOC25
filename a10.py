@@ -1,5 +1,6 @@
 f = open("input/i10.txt")
 
+
 states = []
 list_of_buttons = []
 joltages = []
@@ -33,8 +34,8 @@ def change_joltage(joltage,button):
 
 def solve_state(state,buttons):
     presses = 0
-    oldstate = {tuple([0 for n in s])}
-    newstates = {tuple([0 for n in s])}
+    oldstate = {tuple([0 for n in state])}
+    newstates = {tuple([0 for n in state])}
     while state not in newstates:
         presses += 1
         newstates2 = set()
@@ -47,12 +48,51 @@ def solve_state(state,buttons):
         newstates = newstates2
     return presses
 
+def solve_joltage(state,buttons):
+    presses = 0
+    oldstate = {tuple([0 for n in state])}
+    newstates = {tuple([0 for n in state])}
+    while state not in newstates:
+        presses += 1
+        print(presses)
+        newstates2 = set()
+        for b in buttons:
+            for nstate in newstates:
+                calculated_state = change_joltage(nstate,b)
+                if calculated_state not in oldstate:
+                    newstates2.add(calculated_state)
+        oldstate.update(newstates)
+        newstates = newstates2
+    return presses
 
-counter = 0
-for i, s in enumerate(states):
-    counter += solve_state(s,list_of_buttons[i])
 
-print(counter)
+def solve1(states,list_of_buttons):
+    counter = 0
+    for i, s in enumerate(states):
+        counter += solve_state(s,list_of_buttons[i])
+    print(counter)
+    return counter
+
+
+# this should work, but is exponentioal in the runtime/searchspace, for all joltage levels
+# is correct with the example, works in not much tima also
+# i should go with a linear equation solver
+def solve2_naive(joltages,list_of_buttons):
+    counter = 0
+    for i, s in enumerate(joltages):
+        counter += solve_joltage(s,list_of_buttons[i])
+    print(counter)
+    return counter
+
+# solve1(states,list_of_buttons)
+
+# counter = 0
+# for i, s in enumerate(states):
+#     counter += solve_joltage(joltage,list_of_buttons[i])
+# print(counter)
+
+solve_joltage(joltages[0],list_of_buttons[0])
+# solve2_naive(joltages,list_of_buttons)
     # grundidee:
     # oldstate = []
     # newstates = [originalstate]
