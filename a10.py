@@ -104,7 +104,6 @@ def solve2_naive(joltages,list_of_buttons):
     # gucken ob neue states entstanden sind
     # maximale länge von states sind 10, also 2^10 möglichkeiten maximal
 def solve_eq(joltage,mybuttons):
-    print(mybuttons)
     model = LpProblem("ILP", LpMinimize)
 
     # Anzahl der Variablen
@@ -118,14 +117,26 @@ def solve_eq(joltage,mybuttons):
 
     for i,j in enumerate(joltage):
         A = [1 if i in b else 0 for b in mybuttons]
-        print(A)
         model += lpSum(A[i] * x[i] for i in range(n)) == j
 
-    print(model)
+    # print(model)
 
-    model.solve()
-    print("Lösung:")
-    for j in range(n):
-        print(f"x{j} =", x[j].value())
+    solver = PULP_CBC_CMD(msg=False, logPath=None)
+    status = model.solve(solver)
+    # print("Lösung:")
+    # for j in range(n):
+    #     print(f"x{j} =", x[j].value())
+    best = sum(x[j].value() for j in range(len(x)))
+    return int(best)
+# solution = solve_eq(joltages[0],list_of_buttons[0])
+# print(solution)
 
-solve_eq(joltages[0],list_of_buttons[0])
+def solve2(joltages, list_of_buttons):
+    counter = 0
+    for i,j in enumerate(joltages):
+        counter += solve_eq(j,list_of_buttons[i])
+    
+    return counter
+
+solution2 = solve2(joltages,list_of_buttons)
+print(solution2)
