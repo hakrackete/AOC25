@@ -1,3 +1,6 @@
+from pulp import *
+
+
 f = open("input/i10.txt")
 
 
@@ -91,7 +94,7 @@ def solve2_naive(joltages,list_of_buttons):
 #     counter += solve_joltage(joltage,list_of_buttons[i])
 # print(counter)
 
-solve_joltage(joltages[0],list_of_buttons[0])
+# solve_joltage(joltages[0],list_of_buttons[0])
 # solve2_naive(joltages,list_of_buttons)
     # grundidee:
     # oldstate = []
@@ -100,3 +103,29 @@ solve_joltage(joltages[0],list_of_buttons[0])
     # oldste.update(newstate)
     # gucken ob neue states entstanden sind
     # maximale länge von states sind 10, also 2^10 möglichkeiten maximal
+def solve_eq(joltage,mybuttons):
+    print(mybuttons)
+    model = LpProblem("ILP", LpMinimize)
+
+    # Anzahl der Variablen
+    n = len(mybuttons)
+
+    # soviele Variablen erstellen, constraint, dass diese INteger sein müssen
+    x = LpVariable.dicts("x", range(n), lowBound=0, cat="Integer")
+
+    # Zielfunktion mitteilen, wir wollen die Summe aller variablen minimieren
+    model += lpSum(x[i] for i in range(n))
+
+    for i,j in enumerate(joltage):
+        A = [1 if i in b else 0 for b in mybuttons]
+        print(A)
+        model += lpSum(A[i] * x[i] for i in range(n)) == j
+
+    print(model)
+
+    model.solve()
+    print("Lösung:")
+    for j in range(n):
+        print(f"x{j} =", x[j].value())
+
+solve_eq(joltages[0],list_of_buttons[0])
